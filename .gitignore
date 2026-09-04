@@ -1,0 +1,21 @@
+# Backup files
+*.backup
+
+# IDE
+.idea/
+.vscode/
+
+# Java
+target/
+*.class
+
+# Node
+node_modules/
+dist/
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
