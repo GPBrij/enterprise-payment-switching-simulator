@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import za.co.goalpostbrij.epss.domain.Transaction;
 import za.co.goalpostbrij.epss.dto.TransactionRequest;
 import za.co.goalpostbrij.epss.dto.TransactionResponse;
+import za.co.goalpostbrij.epss.issuer.AuthorizationDecision;
+import za.co.goalpostbrij.epss.issuer.IssuerSimulatorService;
 import za.co.goalpostbrij.epss.repository.TransactionRepository;
 import za.co.goalpostbrij.epss.routing.RoutingDecision;
 import za.co.goalpostbrij.epss.routing.RoutingService;
@@ -19,12 +21,22 @@ public class TransactionService {
 
     private final TransactionRepository repository;
     private final RoutingService routingService;
+    private final IssuerSimulatorService issuerSimulatorService;
 
     @Transactional
     public TransactionResponse create(TransactionRequest request) {
-        RoutingDecision decision = routingService.route(request.cardNumber());
 
-        Transaction tx = Transaction.builder()
+        RoutingDecision routingDecision =
+                routingService.route(request.cardNumber());
+
+        AuthorizationDecision authorization =
+                issuerSimulatorService.authorize(request.cardNumber());
+
+        String approvalCode = authorization.status().equals("APPROVED")
+                ? createApprovalCode()
+                : null;
+
+        Transaction transaction = Transaction.builder()
                 .id(UUID.randomUUID())
                 .traceNumber(request.traceNumber())
                 .cardNumber(routingService.mask(request.cardNumber()))
@@ -32,18 +44,21 @@ public class TransactionService {
                 .amount(request.amount())
                 .currency(request.currency())
                 .channel(request.channel())
-                .issuerBank(decision.issuerBank())
-                .status("APPROVED")
-                .approvalCode(createApprovalCode())
+                .issuerBank(routingDecision.issuerBank())
+                .status(authorization.status())
+                .approvalCode(approvalCode)
                 .createdDate(LocalDateTime.now())
                 .build();
 
-        repository.save(tx);
+        repository.save(transaction);
 
         return new TransactionResponse(
-                tx.getStatus(),
-                tx.getApprovalCode(),
-                tx.getIssuerBank());
+                transaction.getStatus(),
+                transaction.getApprovalCode(),
+                transaction.getIssuerBank(),
+                authorization.responseCode(),
+                authorization.message()
+        );
     }
 
     private String createApprovalCode() {
