@@ -1,0 +1,7 @@
+flowchart LR
+    V[Validation] --> M[Masking]
+    M --> RC[Routing Control]
+    RC --> FC[Fraud Control]
+    FC --> AC[Authorization Control]
+    AC --> AE[Audit Evidence]
+    AE --> SR[Settlement Reconciliation]

@@ -1,0 +1,9 @@
+flowchart LR
+    C[ATM or POS Simulator] --> A[Transaction API]
+    A --> R[BIN Routing]
+    R --> F[Fraud Screening]
+    F --> I[Issuer Simulator]
+    I --> J[Transaction Journal]
+    J --> S[Settlement Engine]
+    S --> O[Operations Reporting]
+    O --> D[React Dashboard]

@@ -1,0 +1,26 @@
+project:
+  name: Enterprise Payment Switching Simulator
+  shortName: EPSS
+  version: 1.6
+  status: Portfolio Demonstrator
+  owner: Patrick Brijraj
+  classification: Public Portfolio Documentation
+  stack:
+    backend: Java 21 and Spring Boot
+    database: PostgreSQL 17
+    migrations: Flyway
+    frontend: React, TypeScript, Bootstrap and Chart.js
+    infrastructure: Docker Compose
+  capabilities:
+    - transaction-journal
+    - bin-routing
+    - issuer-simulation
+    - fraud-controls
+    - settlement-reconciliation
+    - operations-reporting
+  dataPolicy:
+    syntheticDataOnly: true
+    maskCardNumbers: true
+    secretsInRepository: false
+    productionRoutingData: false
+  publicationBoundary: Architecture, governance, metadata and synthetic demonstrations only
